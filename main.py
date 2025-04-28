@@ -181,3 +181,6 @@ else:
             st.error("Por favor, faça login para acessar esta aba.")
         else:
             render_eventos(events)
+
+# No terminal digite:
+# streamlit run main.py
