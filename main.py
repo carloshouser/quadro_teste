@@ -3,6 +3,16 @@ import streamlit as st
 import json
 import base64
 from constantes import usuarios, estilo, quadros
+from streamlit_cookies_manager import EncryptedCookieManager
+
+# Configuração dos Cookies
+cookies = EncryptedCookieManager(
+    prefix="flamboyant_",
+    password="segredo_super_secreto"  # Coloque uma senha forte aqui
+)
+
+if not cookies.ready():
+    st.stop()
 
 # Funções Auxiliares
 
@@ -14,6 +24,7 @@ def add_css():
     st.markdown(estilo, unsafe_allow_html=True)
 
 
+@st.cache_data
 def load_json(file_path):
     """
     Carrega dados de um arquivo JSON.
@@ -38,8 +49,16 @@ def autenticar_usuario(usuario, senha):
 
 def reset_sessao():
     """
-    Reseta a sessão do Streamlit.
+    Reseta a sessão do Streamlit e remove cookies.
     """
+    # cookies.delete("usuario")
+    # cookies.delete("senha")
+    cookies['usuario'] = ''
+    cookies['senha'] = ''
+    st.session_state["logado"] = False
+    st.session_state["pagina"] = "login"
+    st.rerun()
+
     for key in list(st.session_state.keys()):
         del st.session_state[key]
     st.rerun()
@@ -57,11 +76,17 @@ def render_login():
 
     if st.button("Entrar"):
         if autenticar_usuario(usuario, senha):
+            # Atualiza sessão
             st.session_state.update({
                 "logado": True,
                 "usuario": usuario,
                 "pagina": "home"
             })
+            # Salva login nos cookies
+            # cookies.set("usuario", usuario)
+            cookies['usuario'] = usuario
+            # cookies.set("senha", senha)
+            cookies['senha'] = senha
             st.rerun()
         else:
             st.error("Usuário ou senha incorretos.")
@@ -94,9 +119,8 @@ def render_home():
 
     st.divider()
     st.write('### Designações')
-
     st.markdown(
-        '<a href="https://www.dropbox.com/sh/g7i0hvmnbcd495i/AAC_vF7im3ke8-lvRGfjYQRRa?dl=0" target="_blank" style="margin-top: 20px;">📂 Acessar Designações</a>',
+        '<a href="https://www.google.com" target="_blank" style="margin-top: 20px;">📂 Acessar Designações</a>',
         unsafe_allow_html=True
     )
     st.write(
@@ -104,9 +128,8 @@ def render_home():
 
     st.divider()
     st.write('### Territórios')
-
     st.markdown(
-        '<a href="https://www.dropbox.com/scl/fo/cvzev6g0ktlwqqd9sbkcz/AKxNxYXYDq2OgFYSj8szZdw?rlkey=oy5r89ijmjrzrlguf5l0fy8qx&dl=0" target="_blank" style="margin-top: 20px;">📂 Territórios</a>',
+        '<a href="https://www.youtube.com" target="_blank" style="margin-top: 20px;">📂 Territórios</a>',
         unsafe_allow_html=True
     )
     st.write(
@@ -134,8 +157,7 @@ def render_visualizar():
         elif quadro["arquivo"].endswith(".pdf"):
             pdf_base64 = base64.b64encode(file.read()).decode('utf-8')
             st.markdown(
-                f'<iframe src="data:application/pdf;base64,{
-                    pdf_base64}" width="100%" height="1000px"></iframe>',
+                f'<iframe src="data:application/pdf;base64,{pdf_base64}" width="100%" height="1000px"></iframe>',
                 unsafe_allow_html=True
             )
 
@@ -159,13 +181,33 @@ def render_eventos(events):
     if st.button("Fechar"):
         reset_sessao()
 
-
 # Configuração Principal
+
+
 add_css()
 render_header()
 events = load_json('events.json')
 
+# Inicializar a sessão
 if "logado" not in st.session_state:
+    st.session_state["logado"] = False
+    st.session_state["pagina"] = "login"
+
+# Verificar se já tem login salvo nos cookies
+if not st.session_state["logado"]:
+    usuario_cookie = cookies.get("usuario")
+    senha_cookie = cookies.get("senha")
+    if usuario_cookie and senha_cookie:
+        if autenticar_usuario(usuario_cookie, senha_cookie):
+            st.session_state.update({
+                "logado": True,
+                "usuario": usuario_cookie,
+                "pagina": "home"
+            })
+            st.rerun()
+
+# Decidir o que mostrar
+if not st.session_state["logado"]:
     render_login()
 else:
     tab1, tab2 = st.tabs(["Quadro", "Eventos"])
@@ -177,10 +219,4 @@ else:
             render_visualizar()
 
     with tab2:
-        if not st.session_state.get("logado"):
-            st.error("Por favor, faça login para acessar esta aba.")
-        else:
-            render_eventos(events)
-
-# No terminal digite:
-# streamlit run main.py
+        render_eventos(events)
