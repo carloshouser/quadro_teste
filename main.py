@@ -17,7 +17,7 @@ if not cookies.ready():
 # Funções Auxiliares
 
 def add_css():
-    """
+    """ 
     Adiciona o CSS para personalizar o layout do aplicativo.
     """
     st.markdown(estilo, unsafe_allow_html=True)
