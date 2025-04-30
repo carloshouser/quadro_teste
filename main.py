@@ -43,12 +43,13 @@ def autenticar_usuario(usuario, senha):
 
 def reset_sessao():
     """
-    Reseta a sessão do Streamlit e remove cookies.
+    Reseta a sessão do Streamlit e remove cookies.   
+    Faz logout: limpa cookies e volta para tela de login.
     """
-    cookies.delete("usuario")
-    cookies.delete("senha")
-    for key in list(st.session_state.keys()):
-        del st.session_state[key]
+    cookies['usuario'] = ''
+    cookies['senha'] = ''
+    st.session_state["logado"] = False
+    st.session_state["pagina"] = "login"
     st.rerun()
 
 # Renderizações
@@ -70,8 +71,8 @@ def render_login():
                 "pagina": "home"
             })
             # Salva login nos cookies
-            cookies.set("usuario", usuario)
-            cookies.set("senha", senha)
+            cookies['usuario'] =  usuario
+            cookies['senha'] = senha
             st.rerun()
         else:
             st.error("Usuário ou senha incorretos.")
