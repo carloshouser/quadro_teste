@@ -1,3 +1,4 @@
+# pip install streamlit-cookies-manager
 # Importações
 import streamlit as st
 import json
