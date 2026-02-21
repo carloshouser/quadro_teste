@@ -1,7 +1,7 @@
-vm
-bkp
-bkp_05_jan_2026
-__pycache__
-.venv*
-.env
+vm/
+bkp/
+bkp_05_jan_2026/
+__pycache__/
+.venv*/
+.vm
 .streamlit/secrets.toml
