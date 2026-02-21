@@ -15,7 +15,39 @@
 # pip install streamlit-cookies-manager
 # pip freeze > requirements.txt
 # pip install -r requirements.txt
-# Teste
+# Clonar no git: 
+## git clone https://github.com/carloshouser/quadro_teste.git
+
+# Como Criar um novo OAuth Client ID (forma correta)
+# https://console.cloud.google.com/apis/credentials
+# flamboyantdesignacoes@gmail.com
+
+# PASSO 1 — Criar um novo OAuth Client ID (forma correta)
+
+# No Google Cloud Console:
+
+# Vá em
+# https://console.cloud.google.com/apis/credentials
+
+# Clique em:
+# + Criar credenciais
+# Escolha ID do cliente OAuth
+# Aplicativo da Web   ← MUITO IMPORTANTE
+# PASSO 2 — Preencha
+# Nome: Streamlit Flamboyant
+# Universal Windows Platform
+
+# Tem que ser Aplicativo da Web
+
+# PASSO 2 — Preencha
+
+# Nome:
+
+# Streamlit Flamboyant
+
+# URIs de redirecionamento autorizados: https://SEU-APP.streamlit.app/oauth2callback
+# Clique em criar
+# Copie os valores de ClientID e ClientSecret
 
 import streamlit as st
 
